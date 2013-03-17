@@ -1,4 +1,5 @@
 import dj_database_url
+import os
 
 # Django settings for bitcoin_eshop project.
 
