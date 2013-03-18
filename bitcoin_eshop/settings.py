@@ -168,7 +168,7 @@ LOGGING = {
     }
 }
 
-if os.environ.get('DEVELOPMENT', None):
+if os.environ.get('PRODUCTION', None):
     # Parse database configuration from $DATABASE_URL
     DATABASES['default'] = dj_database_url.config()
 
