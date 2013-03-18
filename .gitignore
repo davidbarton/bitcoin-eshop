@@ -1,2 +1,3 @@
 venv
 *.pyc
+bitcoin_eshop/db

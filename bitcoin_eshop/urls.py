@@ -5,8 +5,11 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^$', 'web.views.index'),
+    url(r'^add/', 'web.views.add'),
+
     # Examples:
-    url(r'^$', 'bitcoin_eshop.views.home', name='home'),
+    # url(r'^$', 'bitcoin_eshop.views.home', name='home'),
     # url(r'^bitcoin_eshop/', include('bitcoin_eshop.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
