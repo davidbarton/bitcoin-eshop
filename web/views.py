@@ -1,20 +1,76 @@
 from django.shortcuts import render, get_object_or_404
-from web.models import Order
+from django.http import HttpResponseRedirect
+
+from bitcoin_eshop.settings import MASTER_PUBLIC_KEY
+from web.models import Products, ProductForm, ContactInformationForm, Order
 from web.open_wallet import *
 
 def index(request):
-    # now return the rendered template
-    master_public_key_hex = "112cee2e893f9e2531b15f013b05a921b917933a310191122470661995e9083ad873e574929a982e142fb3c3c1c3c38a98894802feef7b1c177cc3970cbf708b"
-    w = get_wallet_or_create(master_public_key_hex)
-    a = get_new_address(master_public_key_hex)
-    validate_address_format(a)
-    a = get_new_address(master_public_key_hex)
-    validate_address_format(a)
-    a = get_new_address(master_public_key_hex)
-    validate_address_format(a)
-    a = get_new_address(master_public_key_hex)
-    validate_address_format(a)
-    return render(request, 'web/index.html', {'msg': a})
+	if request.method == 'POST':
+		forms = []
+		for product in Products().all:
+			if request.POST['product'] == product:
+				form = ProductForm(request.POST)
+				if form.is_valid():
+					return HttpResponseRedirect('/order/?product=' + form.cleaned_data['product'] + '&count=' + str(form.cleaned_data['count']))
+			else:
+				form = ProductForm()
+			form.set_product(product)
+			forms.append(form)
+	else:
+		forms = []
+		for product in Products().all:
+			form = ProductForm()
+			form.set_product(product)
+			forms.append(form)
+
+	return render(request, 'web/index.html', {
+		'forms': forms,
+	})
+
+def order(request):
+	if request.method == 'POST':
+		product = request.POST['product']
+		count = request.POST['count']
+		form = ContactInformationForm(request.POST)
+		if form.is_valid():
+
+			# address generator
+			w = get_wallet_or_create(MASTER_PUBLIC_KEY)
+			a = get_new_address(MASTER_PUBLIC_KEY)
+			validate_address_format(a)
+			a = get_new_address(MASTER_PUBLIC_KEY)
+			validate_address_format(a)
+			a = get_new_address(MASTER_PUBLIC_KEY)
+			validate_address_format(a)
+
+			# TODO:
+			# make address list storage
+			# generate address and QR code
+			# save data
+			# send emails
+			# print address and QR code
+			return HttpResponseRedirect('/checkout/')
+	else:
+		try:
+			product = request.GET['product']
+			count = request.GET['count']
+			validate = ProductForm({'product': product, 'count': count})
+			if validate.is_valid():
+				form = ContactInformationForm(initial={'product': product, 'count': count})
+			else:
+				return HttpResponseRedirect('/')
+		except Exception, e:
+			return HttpResponseRedirect('/')
+
+	return render(request, 'web/order.html', {
+		'product': product,
+		'count': count,
+		'form': form,
+	})
+
+def checkout(request):
+	return render(request, 'web/checkout.html', {})
 
 def add(request):
 	# add new order into database

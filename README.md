@@ -17,6 +17,11 @@ source venv/bin/activate
 pip install -r requirements.txt
 mkdir -p bitcoin_eshop/db
 touch bitcoin_eshop/db/development.db
+touch bitcoin_eshop/master_public_key_dev
 python manage.py syncdb
+```
+Now you should save your master Public Key into bitcoin_eshop/master_public_key_dev file
+
+```
 python manage.py runserver
 ```

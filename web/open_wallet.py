@@ -105,9 +105,6 @@ def get_bcaddress_version(strAddress):
     checksum = addr[-4:]
     vh160 = addr[:-4] # Version plus hash160 is what is checksummed                                                                                                    
     h3=SHA256.new(SHA256.new(vh160).digest()).digest()
-    #h3 = hashlib.sha256(vh160)
-    #h3 = hashlib.sha256(h3.digest())
-    #h3.digest()
     if h3[0:4] == checksum:
         return ord(version)
     return None

@@ -1,10 +1,17 @@
 {% extends 'base.html' %}
  
  
-{% block title %} Blog Archive {% endblock %}
+{% block title %} Bitcoin eshop {% endblock %}
  
 {% block content %}
-    <h1> My Blog Archive </h1>
-    <p>hi</p>
-    <p>{{msg}}</p>
+    <h1> Super Bitcoin eshop </h1>
+    <p>Welcome stranger!</p>
+
+    {% for form in forms %}
+    	<form action="/" method="post">{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" value="Submit" />
+		</form>
+    {% endfor %}
+
 {% endblock %}
