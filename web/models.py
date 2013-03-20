@@ -34,7 +34,10 @@ class ContactInformationForm(forms.Form):
 
 
 class Order(models.Model):
-	wallet_address = models.CharField(max_length=34)
+	wallet_address = models.OneToOneField(
+		max_length = 34,
+		primary_key = True
+	)
 	product = models.CharField(max_length=30)
 	count = models.IntegerField()
 	customer = models.CharField(max_length=60)
@@ -47,6 +50,13 @@ class Order(models.Model):
 
 	class Meta:
 		ordering = ['-created']
+
+	def __unicode__(self):
+		return u'%s' % self.wallet_address
+
+class Addresses(models.Model):
+	id = models.AutoField(primary_key=True)
+	wallet_address = models.CharField(max_length=34)
 
 	def __unicode__(self):
 		return u'%s' % self.wallet_address

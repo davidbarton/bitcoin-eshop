@@ -4,20 +4,20 @@ import ecdsa
 from Crypto.Hash import SHA256
 from ecdsa.util import string_to_number, number_to_string
 
-wallets = {}
 
-
-# secp256k1, http://www.oid-info.com/get/1.3.132.0.10
-_p = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2FL
-_r = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141L
-_b = 0x0000000000000000000000000000000000000000000000000000000000000007L
-_a = 0x0000000000000000000000000000000000000000000000000000000000000000L
-_Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798L
-_Gy = 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8L
-curve_secp256k1 = ecdsa.ellipticcurve.CurveFp( _p, _a, _b )
-generator_secp256k1 = ecdsa.ellipticcurve.Point( curve_secp256k1, _Gx, _Gy, _r )
-oid_secp256k1 = (1,3,132,0,10)
-SECP256k1 = ecdsa.curves.Curve("SECP256k1", curve_secp256k1, generator_secp256k1, oid_secp256k1 ) 
+class Hashing:
+    def __init__(self):
+        # secp256k1, http://www.oid-info.com/get/1.3.132.0.10
+        _p = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2FL
+        _r = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141L
+        _b = 0x0000000000000000000000000000000000000000000000000000000000000007L
+        _a = 0x0000000000000000000000000000000000000000000000000000000000000000L
+        _Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798L
+        _Gy = 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8L
+        curve_secp256k1 = ecdsa.ellipticcurve.CurveFp( _p, _a, _b )
+        generator_secp256k1 = ecdsa.ellipticcurve.Point( curve_secp256k1, _Gx, _Gy, _r )
+        oid_secp256k1 = (1,3,132,0,10)
+        self.SECP256k1 = ecdsa.curves.Curve("SECP256k1", curve_secp256k1, generator_secp256k1, oid_secp256k1 ) 
 
 
 ############ functions from pywallet ##################### 
@@ -112,28 +112,34 @@ def get_bcaddress_version(strAddress):
 
 ############ open wallet manipulation functions #####################
 
-def get_wallet_or_create(mpk):
-    if mpk in wallets.keys():
-        return wallets[mpk]
-    w = Wallet()
-    w.master_public_key = mpk.decode('hex')
-    w.create_new_address(False)
-    wallets[mpk] = w
-    return w
+class WalletManipulation:
+    def __init__(self, addresses):
+        # TODO:
+        # insert addresses from db
+        self.wallets = {}
 
-def get_new_address(mpk):
-    w = get_wallet_or_create(mpk)
-    a = w.create_new_address(False)
-    return a
+    def get_wallet_or_create(self, mpk):
+        if mpk in wallets.keys():
+            return wallets[mpk]
+        w = Wallet()
+        w.master_public_key = mpk.decode('hex')
+        w.create_new_address(False)
+        wallets[mpk] = w
+        return w
 
-def validate_address_format(address):
-    address = address.strip()
-    if re.match(r"[a-zA-Z1-9]{27,35}$", address) is None:
-        return False
-    elif get_bcaddress_version(address) is None:
-        return False
-    else:
-        return True
+    def get_new_address(mpk):
+        w = get_wallet_or_create(mpk)
+        a = w.create_new_address(False)
+        return a
+
+    def validate_address_format(address):
+        address = address.strip()
+        if re.match(r"[a-zA-Z1-9]{27,35}$", address) is None:
+            return False
+        elif get_bcaddress_version(address) is None:
+            return False
+        else:
+            return True
 
 
 ############ open wallet class #####################
