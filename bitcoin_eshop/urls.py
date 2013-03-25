@@ -7,8 +7,6 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     url(r'^$', 'web.views.index'),
     url(r'^order/', 'web.views.order'),
-    url(r'^checkout/', 'web.views.checkout'),
-    url(r'^add/', 'web.views.add'),
 
     # Examples:
     # url(r'^$', 'bitcoin_eshop.views.home', name='home'),

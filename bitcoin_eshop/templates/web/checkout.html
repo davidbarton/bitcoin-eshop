@@ -6,5 +6,15 @@
 {% block content %}
     <h1> Super Bitcoin eshop </h1>
     <p>o_O</p>
+    
+    <p>wallet_address: {{order.wallet_address}}</p>
+    <p>price: {{order.price}}</p>
+    <p>product: {{order.product.title}}</p>
+    <p>count: {{order.count}}</p>
+    <p>email: {{order.email}}</p>
+    <p>name: {{order.name}}</p>
+    <p>address: {{order.address}}</p>
+    <p>city: {{order.city}}</p>
+    <p>postcode: {{order.postcode}}</p>
 
 {% endblock %}

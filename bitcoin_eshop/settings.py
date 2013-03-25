@@ -19,16 +19,12 @@ ADMINS = (
 MANAGERS = ADMINS
 
 if os.environ.get('PRODUCTION'):
-    MASTER_PUBLIC_KEY = os.getenv('MASTER_PUBLIC_KEY')
-
     DATABASES = {}
     # Parse database configuration from $DATABASE_URL
     DATABASES['default'] = dj_database_url.config()
     # Honor the 'X-Forwarded-Proto' header for request.is_secure()
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 else:
-    f = open(os.path.join(SITE_ROOT, 'master_public_key_dev'), 'r')
-    MASTER_PUBLIC_KEY = f.read().rstrip()
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
