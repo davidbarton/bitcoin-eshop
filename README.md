@@ -21,7 +21,11 @@ python manage.py syncdb
 python manage.py runserver
 ```
 
-dev database init commands
+dev database - python shell
+```
+python manage.py shell
+```
+dev database - init commands
 ```
 from web.models import *
 k = MasterPublicKeys(master_public_key="YOUR_MASTER_PUBLIC_KEY")
