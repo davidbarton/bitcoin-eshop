@@ -5,7 +5,6 @@ Simple bitcoin eshop. Does not use private keys.
 
 Prerequisites
 * Installed Python and Virtualenv, see http://docs.python-guide.org/en/latest/starting/install/linux/
-* ???
 
 Install
 
@@ -21,18 +20,18 @@ python manage.py syncdb
 python manage.py runserver
 ```
 
-dev database - python shell
+start python shell
 ```
 python manage.py shell
 ```
-dev database - init commands
+type commands
 ```
 from web.models import *
 k = MasterPublicKeys(master_public_key="YOUR_MASTER_PUBLIC_KEY")
 k.save()
-p1 = Products(title="chleba",base_price="1.3",master_public_key=k)
-p2 = Products(title="pastika",base_price="1.95",master_public_key=k)
-p3 = Products(title="pivo",base_price="0.7",master_public_key=k)
+p1 = Products(title="chleba",img="http://www.freegreatpicture.com/files/104/20309-christmas-food.jpg",base_price="1.3",master_public_key=k)
+p2 = Products(title="pastika",img="http://www.freegreatpicture.com/files/104/20309-christmas-food.jpg",base_price="1.95",master_public_key=k)
+p3 = Products(title="pivo",img="http://www.freegreatpicture.com/files/104/20309-christmas-food.jpg",base_price="0.7",master_public_key=k)
 p1.save()
 p2.save()
 p3.save()

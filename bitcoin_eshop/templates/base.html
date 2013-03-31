@@ -5,11 +5,63 @@
         <title>
             {% block title %}{% endblock %}
         </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Small bitcoin eshop.">
+        {% load staticfiles %}
+        <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet" media="screen">
+        <style type="text/css">
+            body {
+                padding-top: 30px;
+                padding-bottom: 40px;
+            }
+        </style>
+        {% load staticfiles %}
+        <link href="{% static "bootstrap/css/bootstrap-responsive.min.css" %}" rel="stylesheet">
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="../assets/js/html5shiv.js"></script>
+        <![endif]-->
         </head>
     <body>
-        <div class="content">
-            {% block content %}
-            {% endblock %}
+
+        <div class="container">
+
+            <!-- Main hero unit for a primary marketing message or call to action -->
+            <div class="hero-unit">
+                <h1>Super Bitcoin eshop</h1>
+                <p>Welcome stranger! We want to deliver our best products into your home. We accept Bitcoins, awesome cryptographic currency. Are you interested? Please order now and enjoy our goods tomorrow. For any questions contact us at <a href="mailto:hello@example.com">hello@example.com</a></p>
+                <p><a href="#" class="btn btn-info btn-large">Learn more »</a></p>
+            </div>
+
+            <!-- Page content -->
+            <div class="content">
+                {% block content %}
+                {% endblock %}
+            </div>
+
+            <hr>
+
+            <footer class="text-center">
+                <p>© Company 2013</p>
+            </footer>
+
         </div>
+
+        <script src="http://code.jquery.com/jquery.js"></script>
+        {% load staticfiles %}
+        <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                // index.html
+                $("form#choose-product p input[name=count]").addClass("span2");
+
+                // order.html
+                $("form#customer-data label").addClass("control-label");
+                $("form#customer-data input").addClass("span2");
+                $("form#customer-data div.form-actions button[name=cancel]").click(function(){
+                    window.location = "";
+                });
+            });
+        </script>
     </body>
 </html>

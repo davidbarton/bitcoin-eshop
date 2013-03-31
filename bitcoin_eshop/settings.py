@@ -2,29 +2,36 @@ import dj_database_url
 import os
 import django
 
-# Django settings for bitcoin_eshop project.
-
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
 # calculated paths for django and the site
 # used as starting points for various other paths
 DJANGO_ROOT = os.path.dirname(os.path.realpath(django.__file__))
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('David Barton', 'david@dreamorreal.com'),
 )
 
 MANAGERS = ADMINS
 
 if os.environ.get('PRODUCTION'):
+    DEBUG = False
+    TEMPLATE_DEBUG = DEBUG
+
+    # Make this unique, and don't share it with anybody.
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+
     DATABASES = {}
     # Parse database configuration from $DATABASE_URL
     DATABASES['default'] = dj_database_url.config()
     # Honor the 'X-Forwarded-Proto' header for request.is_secure()
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 else:
+    DEBUG = True
+    TEMPLATE_DEBUG = DEBUG
+
+    # Make this unique, and don't share it with anybody.
+    SECRET_KEY = '91))g8x7420zh=d7lf6chefp(k@&rbkbjgtumj0y#4(%-=@t)s'
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -39,13 +46,13 @@ else:
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.bitcoin-eshop.herokuapp.com']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Europe/Prague'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -88,6 +95,8 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(SITE_ROOT, "static"),
+    '/var/www/static/',
 )
 
 # List of finder classes that know how to find static files in
@@ -97,9 +106,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '91))g8x7420zh=d7lf6chefp(k@&rbkbjgtumj0y#4(%-=@t)s'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (

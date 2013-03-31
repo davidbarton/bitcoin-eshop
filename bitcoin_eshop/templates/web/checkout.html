@@ -4,17 +4,27 @@
 {% block title %} Bitcoin eshop {% endblock %}
  
 {% block content %}
-    <h1> Super Bitcoin eshop </h1>
-    <p>o_O</p>
+
+    <div class="row">
+        <div class="span10 offset1 text-center">
     
-    <p>wallet_address: {{order.wallet_address}}</p>
-    <p>price: {{order.price}}</p>
-    <p>product: {{order.product.title}}</p>
-    <p>count: {{order.count}}</p>
-    <p>email: {{order.email}}</p>
-    <p>name: {{order.name}}</p>
-    <p>address: {{order.address}}</p>
-    <p>city: {{order.city}}</p>
-    <p>postcode: {{order.postcode}}</p>
+            <h2>You have just finished your order</h2>
+            <p class="lead">Please send <strong>{{ price }}</strong> to address <strong>{{ order.wallet_address }}</strong></p>
+
+            <img src="{{qrcode}}" title="Wallet address" />
+            
+            <h4>Order detail</h4>
+            <p>Wallet address: {{ order.wallet_address }}</p>
+            <p>Price: {{ order.price }}</p>
+            <p>Product: {{ order.product.title }}</p>
+            <p>Count: {{ order.count }}</p>
+            <p>Email: {{ order.email }}</p>
+            <p>Name: {{ order.name }}</p>
+            <p>Address: {{ order.address }}</p>
+            <p>City: {{ order.city }}</p>
+            <p>Postcode: {{ order.postcode }}</p>
+
+        </div>
+    </div>
 
 {% endblock %}

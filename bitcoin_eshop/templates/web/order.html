@@ -4,12 +4,44 @@
 {% block title %} Bitcoin eshop {% endblock %}
  
 {% block content %}
-    <h1> Super Bitcoin eshop </h1>
-    <p>{{product}}: {{count}}</p>
 
-	<form action="/order/" method="post">{% csrf_token %}
-	{{ form.as_p }}
-	<input type="submit" value="Submit" />
-	</form>
+	{% if price_update %}
+		<div class="row">
+	        <div class="span10 offset1 text-center">
+                <p class="alert lead"><em>Warning, your price was updated!</em></p>
+	        </div>
+	    </div>
+    {% endif %}
+
+    <div class="row">
+    	<div class="span10 offset1 text-center">
+    		<p class="lead">You are going to buy {{ count }} {% if count == "1" %}piece{% else %}pieces{% endif %} of {{product_title}} for price {{price}}.</p>
+    	</div>
+    	<div class="span6 offset3">
+			<form id="customer-data" class="form-horizontal" action="/order/" method="post">{% csrf_token %}
+
+				{% for field in form %}
+					{% if field.is_hidden %}
+						{{ field }}
+					{% else %}
+			        <div class="control-group{% if field.errors %} error{% endif %}">
+			        	
+			        		{{ field.label_tag }}
+			        	
+			            <div class="controls">
+			            	{{ field }}
+			            	<span class="help-inline">{{ field.errors.as_text }}</span>
+			            </div>
+			        </div>
+			        {% endif %}
+			    {% endfor %}
+
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary">Confirm order</button>
+					<button type="button" class="btn" name="cancel">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
 
 {% endblock %}

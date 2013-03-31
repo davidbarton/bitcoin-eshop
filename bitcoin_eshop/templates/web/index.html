@@ -4,14 +4,35 @@
 {% block title %} Bitcoin eshop {% endblock %}
  
 {% block content %}
-    <h1> Super Bitcoin eshop </h1>
-    <p>Welcome stranger!</p>
+    
+    {% if msg_old_price %}
+        <div class="row">
+            <div class="span10 offset1 text-center">
+                <p class="alert alert-error lead"><em>Warning, your price was too old and your order was canceled. Please create new order.</em></p>
+            </div>
+        </div>
+    {% endif %}
 
-    {% for form in forms %}
-    	<form action="/" method="post">{% csrf_token %}
-		{{ form.as_p }}
-		<input type="submit" value="Submit" />
-		</form>
-    {% endfor %}
+    <div class="row">
+        {% for product in products %}
+            <div class="span4 text-center">
+                <h2>{{ product.title }} {{ product.price }}</h2>
+                <img class="img-rounded" src="{{ product.img }}" alt="{{ product.title }}" />
+
+                <form id="choose-product" class="form-inline" action="/" method="post">
+                    {% csrf_token %}
+                    {{ product.form.non_field_errors }}
+                    {{ product.form.product }}
+                    {{ product.form.product.errors }}
+                    <p class="input-append">
+                        {{ product.form.count }}
+                        <button type="submit" class="btn btn-primary">Buy now</button>
+                    </p>
+                    <p class="text-error">{{ product.form.count.errors.as_text }}</p>
+                </form>
+
+            </div>
+        {% endfor %}
+    </div>
 
 {% endblock %}

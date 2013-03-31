@@ -11,6 +11,7 @@ class MasterPublicKeys(models.Model):
 class Products(models.Model):
 	id = models.AutoField(primary_key=True)
 	title = models.CharField(max_length=30,unique=True)
+	img = models.CharField(max_length=100)
 	base_price = models.DecimalField(max_digits=16,decimal_places=8)
 	master_public_key = models.ForeignKey(MasterPublicKeys)
 	
@@ -44,12 +45,11 @@ class ProductForm(forms.Form):
 	count = forms.IntegerField(
 		max_value = 99,
 		min_value = 1,
-		label = '',
 		initial = 1
 	)
 	def set_product(self, product):
 		self.fields['product'].initial = product
-		self.fields['count'].label = product
+		#self.fields['count'].label = product
 
 class ContactInformationForm(forms.Form):
 	product = forms.CharField(widget=forms.HiddenInput())
