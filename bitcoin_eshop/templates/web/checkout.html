@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
- 
- 
+
 {% block title %} Bitcoin eshop {% endblock %}
  
 {% block content %}
@@ -8,21 +7,21 @@
     <div class="row">
         <div class="span10 offset1 text-center">
     
-            <h2>You have just finished your order</h2>
-            <p class="lead">Please send <strong>{{ price }}</strong> to address <strong>{{ order.wallet_address }}</strong></p>
+            <h2>Dokončili jste vaši objednávku.</h2>
+            <p class="lead">Odeslali jsme vám email s detaily objednávky. Nyní prosím uhraďte <strong>{{ order.price }}</strong> BTC na adresu <strong>{{ order.wallet_address }}</strong> O úspěšném ověření transakce vás informujeme emailem. Na uskutečnění transakce (potřeba 6 potvrzení) máte 48 hodin.</p>
 
             <img src="{{qrcode}}" title="Wallet address" />
             
-            <h4>Order detail</h4>
-            <p>Wallet address: {{ order.wallet_address }}</p>
-            <p>Price: {{ order.price }}</p>
-            <p>Product: {{ order.product.title }}</p>
-            <p>Count: {{ order.count }}</p>
+            <h4>Detail objednávky</h4>
+            <p>Adresa platby: {{ order.wallet_address }}</p>
+            <p>Cena: {{ order.price }} BTC</p>
+            <p>Zboží: {{ order.product.title }}</p>
+            <p>Počet: {{ order.count }}</p>
             <p>Email: {{ order.email }}</p>
-            <p>Name: {{ order.name }}</p>
-            <p>Address: {{ order.address }}</p>
-            <p>City: {{ order.city }}</p>
-            <p>Postcode: {{ order.postcode }}</p>
+            <p>Celé jméno: {{ order.name }}</p>
+            <p>Ulice a č.p.: {{ order.address }}</p>
+            <p>Město: {{ order.city }}</p>
+            <p>PSČ: {{ order.postcode }}</p>
 
         </div>
     </div>

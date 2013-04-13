@@ -8,7 +8,7 @@
     {% if msg_old_price %}
         <div class="row">
             <div class="span10 offset1 text-center">
-                <p class="alert alert-error lead"><em>Warning, your price was too old and your order was canceled. Please create new order.</em></p>
+                <p class="alert alert-error lead"><em>Varování, vaše cena byla příliš stará, proto byla vaše objednávka zrušena. Vytvořte prosím novou objednávku.</em></p>
             </div>
         </div>
     {% endif %}
@@ -16,7 +16,7 @@
     <div class="row">
         {% for product in products %}
             <div class="span4 text-center">
-                <h2>{{ product.title }} {{ product.price }}</h2>
+                <h2>{{ product.title }} {{ product.price }} BTC</h2>
                 <img class="img-rounded" src="{{ product.img }}" alt="{{ product.title }}" />
 
                 <form id="choose-product" class="form-inline" action="/" method="post">
@@ -26,13 +26,16 @@
                     {{ product.form.product.errors }}
                     <p class="input-append">
                         {{ product.form.count }}
-                        <button type="submit" class="btn btn-primary">Buy now</button>
+                        <button type="submit" class="btn btn-primary">Objednat</button>
                     </p>
                     <p class="text-error">{{ product.form.count.errors.as_text }}</p>
                 </form>
 
             </div>
         {% endfor %}
+        <div class="text-center">
+            <p>* Ke každé objednávce bude připočteno poštovné a balné ve výši {{ shipping_fee }} BTC.</p>
+        </div>
     </div>
 
 {% endblock %}

@@ -2,3 +2,4 @@ venv
 *.pyc
 bitcoin_eshop/db
 master_public_key_dev
+*/migrations/

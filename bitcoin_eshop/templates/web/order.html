@@ -8,14 +8,15 @@
 	{% if price_update %}
 		<div class="row">
 	        <div class="span10 offset1 text-center">
-                <p class="alert lead"><em>Warning, your price was updated!</em></p>
+                <p class="alert lead"><em>Varování, vaše cena byla aktualizována.</em></p>
 	        </div>
 	    </div>
     {% endif %}
 
     <div class="row">
     	<div class="span10 offset1 text-center">
-    		<p class="lead">You are going to buy {{ count }} {% if count == "1" %}piece{% else %}pieces{% endif %} of {{product_title}} for price {{price}}.</p>
+    		<p class="lead">Právě objednáváte {{ count }} {% if count == "1" %}kus{% elif count < "5" %}kusy{% else %}kusů{% endif %} zboží {{product_title}} za cenu {{price}} BTC.</p>
+    		<p class="lead">Vyplňte prosím údaje pro zaslání objednávky.</p>
     	</div>
     	<div class="span6 offset3">
 			<form id="customer-data" class="form-horizontal" action="/order/" method="post">{% csrf_token %}
@@ -37,8 +38,8 @@
 			    {% endfor %}
 
 				<div class="form-actions">
-					<button type="submit" class="btn btn-primary">Confirm order</button>
-					<button type="button" class="btn" name="cancel">Cancel</button>
+					<button type="submit" class="btn btn-primary">Odeslat objednávku</button>
+					<button type="button" class="btn" name="cancel">Zrušit</button>
 				</div>
 			</form>
 		</div>

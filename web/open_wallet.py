@@ -113,8 +113,7 @@ wallets = {}
 def get_wallet_or_create(mpk):
 	if mpk in wallets.keys():
 		return wallets[mpk]
-	w = Wallet()
-	w.master_public_key = mpk.decode('hex')
+	w = Wallet(mpk.decode('hex'))
 	wallets[mpk] = w
 	return w
 
@@ -135,8 +134,8 @@ def validate_address_format(address):
 ############ open wallet class #####################
 
 class Wallet:
-	def __init__(self):
-		self.master_public_key = ''
+	def __init__(self, mpk):
+		self.master_public_key = mpk
 		self.addresses = []
 		self.change_addresses = []
 
