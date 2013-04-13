@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from math import ceil
 import json
+import urllib
 
 import mexbtcapi
 from mexbtcapi.concepts.currencies import EUR, BTC
@@ -22,6 +23,7 @@ from web.open_wallet import get_wallet_or_create, get_new_address
 
 currency = EUR
 raw_shipping_fee = 1.2
+url_secret = "fnfDHUKFW8hFff54"
 
 signer = TimestampSigner()
 
@@ -35,10 +37,13 @@ def index(request):
 	for product in Products.objects.all():
 		if request.method == 'POST' and request.POST['product'] == product.title:
 			form = ProductForm(request.POST)
+
+			# build second (address) form
 			if form.is_valid():
 				product_title = request.POST['product']
 				count = request.POST['count']
 
+				# get fixed price list for all goods (or calc new one) and calculate order price
 				try:
 					price_list = json.loads(signer.unsign(request.session.get('price_list', False), max_age = 60 * 5))
 					price = calculate_order_price(price_list[str(product.id)], count, price_list['shipping_fee'])
@@ -48,15 +53,15 @@ def index(request):
 					price = calculate_order_price(get_exchange_value(exchange_rate, product.base_price), count, get_exchange_value(exchange_rate, raw_shipping_fee))
 					price_update = True
 
+				# fix order price
 				try:
 					del request.session['price_fixed']
 				except KeyError:
 					pass
-
 				request.session['price_fixed'] = signer.sign(json.dumps({product.id:str(price)}))
 
+				# render second (address) form
 				form = ContactInformationForm(initial={'product': product_title, 'count': count})
-
 				return render(request, 'web/order.html', {
 					'product_title': product_title,
 					'count': count,
@@ -66,6 +71,8 @@ def index(request):
 				})
 		else:
 			form = ProductForm()
+
+		# build simple form for each product and calc their prices
 		form.set_product(product.title)
 		price = get_exchange_value(exchange_rate, product.base_price)
 		price_list[product.id] = str(price)
@@ -76,9 +83,9 @@ def index(request):
 			'form': form
 		})
 
+	# fix price list (all goods)
 	shipping_fee = get_exchange_value(exchange_rate, raw_shipping_fee)
 	price_list["shipping_fee"] = str(shipping_fee)
-
 	request = fix_price_list(request, price_list)
 
 	msg_old_price = check_msg_old_price(request)
@@ -90,9 +97,10 @@ def index(request):
 	})
 
 def order(request):
+	# render finished order detail
 	if request.method == 'GET':
 		try:
-			order = Orders.objects.get(id=request.GET['id'])
+			order = Orders.objects.get(id=url_hash_to_order_id(request.GET['o']))
 		except KeyError:
 			return HttpResponseRedirect('/')
 
@@ -109,22 +117,23 @@ def order(request):
 	form = ContactInformationForm(request.POST)
 	if form.is_valid():
 		try:
+			# load fixed price
 			price_fixed = json.loads(signer.unsign(request.session.get('price_fixed', False), max_age = 60 * 15))
 			try:
 				price = price_fixed[str(product.id)]
 			except KeyError:
 				return HttpResponseRedirect('/')
 
+			# get wallet address
 			mpk_row = product.master_public_key
 			mpk_products = Products.objects.filter(master_public_key=mpk_row)
 			nth_address = 0
 			for mpk_product in mpk_products:
 				nth_address += len(Orders.objects.filter(product=mpk_product))
-			mpk = mpk_row.master_public_key
+			wallet = get_wallet_or_create(mpk_row.master_public_key)
+			wallet_address = get_new_address(mpk_row.master_public_key, nth_address)
 
-			wallet = get_wallet_or_create(mpk)
-			wallet_address = get_new_address(mpk, nth_address)
-
+			# build order object
 			order = Orders(
 				wallet_address = wallet_address,
 				price = price,
@@ -139,13 +148,14 @@ def order(request):
 			order.save()
 
 			send_finished_order_email(order)
+			return HttpResponseRedirect('/order?o=' + order_id_to_url_hash(order.id))
 
-			return HttpResponseRedirect('/order?id=' + str(order.id))
-
+		# deteced old price, redirect to get new one
 		except (signing.BadSignature, KeyError):
 			print("Tampering detected! Reditect to home and display old price message.")
 			return HttpResponseRedirect('/?msg=old-price')
 	else:
+		# validate fixed order price (or calc new one)
 		try:
 			price_fixed = json.loads(signer.unsign(request.session.get('price_fixed', False), max_age = 60 * 10))
 			try:
@@ -166,6 +176,7 @@ def order(request):
 
 			request.session['price_fixed'] = signer.sign(json.dumps({product.id:str(price)}))
 
+		# render invalid second (address) form
 		return render(request, 'web/order.html', {
 			'product_title': product_title,
 			'count': count,
@@ -178,6 +189,7 @@ def update(request):
 	count_accepted = 0
 	count_canceled = 0
 	orders = Orders.objects.filter(transaction_status=0)
+
 	for order in orders:
 		if order.created <= (datetime.now() - timedelta(days = 2)):
 			order.transaction_status = 2
@@ -193,9 +205,11 @@ def update(request):
 				order.save()
 				send_accepted_order_email(order)
 				count_accepted += 1
+
 	count_orders = len(orders)
 	count_unchanged = count_orders - count_accepted - count_canceled
 	print "orders: " + str(count_orders) + ", accepted: " + str(count_accepted) + ", canceled: " + str(count_canceled) + ", unchanged: " + str(count_unchanged)
+	
 	if request.user.is_authenticated():
 		return render(request, 'web/list.html', { 'orders': orders })
 	else:
@@ -207,6 +221,12 @@ def list_all(request):
 		return render(request, 'web/list.html', { 'orders': orders })
 	else:
 		return HttpResponseRedirect('/admin')
+
+def order_id_to_url_hash(order_id):
+	return urllib.quote((url_secret + str(order_id)).encode('base64','strict'))
+
+def url_hash_to_order_id(url_hash):
+	return urllib.unquote(url_hash.decode('base64','strict')).replace(url_secret, "")
 
 def get_exchange_rate():
 	mtgox_api = mexbtcapi.apis[0]

@@ -6,6 +6,6 @@ psycopg2==2.4.6
 wsgiref==0.1.2
 gunicorn==0.17.2
 ecdsa==0.8
--e git://github.com/davidbarton/mexbtcapi.git#egg=mexbtcapi
+-e git://github.com/goncalopp/mexbtcapi.git#egg=mexbtcapi
 requests==1.2.0
 South==0.7.6

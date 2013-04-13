@@ -7,32 +7,18 @@ Prerequisites
 * Installed Python and Virtualenv, see http://docs.python-guide.org/en/latest/starting/install/linux/
 
 Install
+* clone rep `git clone git@github.com:davidbarton/bitcoin_eshop.git` and cd `cd bitcoin_eshop`
+* build local environment `virtualenv venv --distribute`
+* use app context `source venv/bin/activate`
+* install dependencies `pip install -r requirements.txt`
+* create dev database dir `mkdir -p bitcoin_eshop/db` and file `touch bitcoin_eshop/db/development.db`
+* create db tables and superuser`python manage.py syncdb`
+* start server `python manage.py runserver`
 
-```
-git clone git@github.com:davidbarton/bitcoin_eshop.git
-cd bitcoin_eshop
-virtualenv venv --distribute
-source venv/bin/activate
-pip install -r requirements.txt
-mkdir -p bitcoin_eshop/db
-touch bitcoin_eshop/db/development.db
-python manage.py syncdb
-python manage.py runserver
-```
+Database migration [South]
+* see [The Basics](http://south.readthedocs.org/en/0.7.6/tutorial/part1.html) and [Converting An App](http://south.readthedocs.org/en/0.7.6/convertinganapp.html)
 
-start python shell
-```
-python manage.py shell
-```
-type commands
-```
-from web.models import *
-k = MasterPublicKeys(master_public_key="YOUR_MASTER_PUBLIC_KEY")
-k.save()
-p1 = Products(title="chleba",img="http://www.freegreatpicture.com/files/104/20309-christmas-food.jpg",base_price="3",stock=10,master_public_key=k)
-p2 = Products(title="pastika",img="http://www.freegreatpicture.com/files/104/20309-christmas-food.jpg",base_price="3.5",stock=15,master_public_key=k)
-p3 = Products(title="pivo",img="http://www.freegreatpicture.com/files/104/20309-christmas-food.jpg",base_price="4",stock=30,master_public_key=k)
-p1.save()
-p2.save()
-p3.save()
-```
+Dev satabase data
+* open and login at [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
+* insert master public keys and products
+* dev product image: [http://www.freegreatpicture.com/files/104/20309-christmas-food.jpg](http://www.freegreatpicture.com/files/104/20309-christmas-food.jpg)

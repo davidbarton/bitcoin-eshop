@@ -25,6 +25,13 @@ if os.environ.get('PRODUCTION'):
     DATABASES['default'] = dj_database_url.config()
     # Honor the 'X-Forwarded-Proto' header for request.is_secure()
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+    # email settings
+    EMAIL_HOST = 'smtp.mandrillapp.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = 'david@dreamorreal.com Copy'
+    EMAIL_HOST_PASSWORD = 'tNBegy08NAErpvaiaVFclg'
 else:
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
@@ -177,10 +184,3 @@ LOGGING = {
         },
     }
 }
-
-# email settings
-EMAIL_HOST = 'smtp.mandrillapp.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'david@dreamorreal.com Copy'
-EMAIL_HOST_PASSWORD = 'tNBegy08NAErpvaiaVFclg'
