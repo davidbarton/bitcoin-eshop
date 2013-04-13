@@ -17,13 +17,24 @@ from mexbtcapi.concepts.currency import Amount
 
 import requests
 
-from web.models import MasterPublicKeys, Products, Orders
+from web.models import MasterPublicKeys, Products, Orders, Variables
 from web.forms import ProductForm, ContactInformationForm
 from web.open_wallet import get_wallet_or_create, get_new_address
 
+try:
+	raw_shipping_fee = Variables.objects.get(title='shipping_fee').dec_var
+except Exception, e:
+	raw_shipping_fee = 1.2
+try:
+	price_multiplicator = Variables.objects.get(title='price_multiplicator').dec_var
+except Exception, e:
+	price_multiplicator = 1.05
+try:
+	url_secret = Variables.objects.get(title='url_secret').str_var
+except Exception, e:
+	url_secret = "fnfDHUKFW8hFff54"
+
 currency = EUR
-raw_shipping_fee = 1.2
-url_secret = "fnfDHUKFW8hFff54"
 
 signer = TimestampSigner()
 
@@ -48,11 +59,11 @@ def index(request):
 				try:
 					price_list = json.loads(signer.unsign(request.session.get('price_list', False), max_age = 60 * 5))
 					price = calculate_order_price(price_list[str(product.id)], count, price_list['shipping_fee'])
-					price_update = False
+					msg = get_msg("")
 				except (signing.BadSignature, KeyError):
 					print("Tampering detected! Price has been updated!")
 					price = calculate_order_price(get_exchange_value(exchange_rate, product.base_price), count, get_exchange_value(exchange_rate, raw_shipping_fee))
-					price_update = True
+					msg = get_msg("price-update")
 
 				# fix order price
 				try:
@@ -67,7 +78,7 @@ def index(request):
 					'product_title': product_title,
 					'count': int(count),
 					'price': price,
-					'price_update': price_update,
+					'msg': msg,
 					'form': form
 				})
 		else:
@@ -247,7 +258,7 @@ def get_exchange_rate():
 	return mtgox_api.market(currency).getTicker().sell
 
 def get_exchange_value(exchange_rate, base_price):
-	value = exchange_rate.convert(Amount(base_price, currency)).value
+	value = exchange_rate.convert(Amount(base_price, currency)).value * Decimal(price_multiplicator)
 	return ceil(value * 100000) / 100000
 
 def check_msg(request):

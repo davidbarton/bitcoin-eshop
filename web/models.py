@@ -14,6 +14,9 @@ class Products(models.Model):
 	img = models.CharField(max_length=100)
 	base_price = models.DecimalField(max_digits=16,decimal_places=8)
 	master_public_key = models.ForeignKey(MasterPublicKeys)
+
+	class Meta:
+		ordering = ['-title']
 	
 	def __unicode__(self):
 		return u'%s' % self.title
@@ -36,3 +39,12 @@ class Orders(models.Model):
 
 	def __unicode__(self):
 		return u'%s' % self.wallet_address
+
+class Variables(models.Model):
+	title = models.CharField(max_length=30,unique=True)
+	str_var = models.CharField(max_length=200,blank=True,null=True)
+	int_var = models.IntegerField(blank=True,null=True)
+	dec_var = models.DecimalField(max_digits=16,decimal_places=8,blank=True,null=True)
+
+	def __unicode__(self):
+		return u'%s' % self.title
