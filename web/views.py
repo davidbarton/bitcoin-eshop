@@ -65,7 +65,7 @@ def index(request):
 				form = ContactInformationForm(initial={'product': product_title, 'count': count})
 				return render(request, 'web/order.html', {
 					'product_title': product_title,
-					'count': count,
+					'count': int(count),
 					'price': price,
 					'price_update': price_update,
 					'form': form
@@ -79,6 +79,7 @@ def index(request):
 		price_list[product.id] = str(price)
 		products_out.append({
 			'title': product.title,
+			'stock': product.stock,
 			'price': price,
 			'img': product.img,
 			'form': form
@@ -189,7 +190,7 @@ def order(request):
 		# render invalid second (address) form
 		return render(request, 'web/order.html', {
 			'product_title': product_title,
-			'count': count,
+			'count': int(count),
 			'price': price,
 			'msg': msg,
 			'form': form

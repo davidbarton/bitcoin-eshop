@@ -17,6 +17,7 @@
         {% for product in products %}
             <div class="span4 text-center">
                 <h2>{{ product.title }} {{ product.price }} BTC</h2>
+                <p>{% if product.stock > 1 and product.stock < 5 %}Zbývají{% else %}Zbývá{% endif %} {{ product.stock }} {% if product.stock == 1 %}kus{% elif product.stock < 5 %}kusy{% else %}kusů{% endif %} na skladě</p>
                 <img class="img-rounded" src="{{ product.img }}" alt="{{ product.title }}" />
 
                 <form id="choose-product" class="form-inline" action="/" method="post">
