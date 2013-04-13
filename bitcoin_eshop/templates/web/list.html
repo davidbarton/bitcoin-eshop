@@ -25,7 +25,7 @@
 				</thead>
 				<tbody>
 		            {% for order in orders %}
-		            	<tr{% if order.transaction_accepted %} class="success"{% else %} class="error"{% endif %}>
+		            	<tr{% if order.transaction_status == 1 %} class="success"{% elif order.transaction_status == 2  %} class="error"{% endif %}>
 							<td>{{ order.wallet_address }}</td>
 				            <td>{{ order.price }}</td>
 				            <td>{{ order.product.title }}</td>

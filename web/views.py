@@ -175,12 +175,15 @@ def order(request):
 		})
 
 def update(request):
+	count_accepted = 0
+	count_canceled = 0
 	orders = Orders.objects.filter(transaction_status=0)
 	for order in orders:
 		if order.created <= (datetime.now() - timedelta(days = 2)):
 			order.transaction_status = 2
 			order.save()
 			send_canceled_order_email(order)
+			count_canceled += 1
 		else:
 			url = "http://blockchain.info/q/addressbalance/" + order.wallet_address + "?confirmations=6"
 			r = requests.get(url)
@@ -189,6 +192,10 @@ def update(request):
 				order.transaction_status = 1
 				order.save()
 				send_accepted_order_email(order)
+				count_accepted += 1
+	count_orders = len(orders)
+	count_unchanged = count_orders - count_accepted - count_canceled
+	print "orders: " + str(count_orders) + ", accepted: " + str(count_accepted) + ", canceled: " + str(count_canceled) + ", unchanged: " + str(count_unchanged)
 	if request.user.is_authenticated():
 		return render(request, 'web/list.html', { 'orders': orders })
 	else:
@@ -230,17 +237,17 @@ def fix_price_list(request, price_list):
 	return request
 
 def send_finished_order_email(order):
-	subject = 'Objednávka Binary Logic Management LLC'
+	subject = '[Potvrzení objednávky] Binary Logic Management LLC'
 	body = 'Hello world...'
 	my_send_email(subject, body, order.email)
 
 def send_accepted_order_email(order):
-	subject = 'Objednávka Binary Logic Management LLC'
+	subject = '[Platba přijata] Binary Logic Management LLC'
 	body = 'Hello world...'
 	my_send_email(subject, body, order.email)
 
 def send_canceled_order_email(order):
-	subject = 'Objednávka Binary Logic Management LLC'
+	subject = '[Objednávka zrušena] Binary Logic Management LLC'
 	body = 'Hello world...'
 	my_send_email(subject, body, order.email)
 
