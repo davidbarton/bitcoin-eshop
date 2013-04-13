@@ -5,10 +5,10 @@
  
 {% block content %}
     
-    {% if msg_old_price %}
+    {% if msg %}
         <div class="row">
             <div class="span10 offset1 text-center">
-                <p class="alert alert-error lead"><em>Varování, vaše cena byla příliš stará, proto byla vaše objednávka zrušena. Vytvořte prosím novou objednávku.</em></p>
+                <p class="alert alert-error lead"><em>{{ msg }}</em></p>
             </div>
         </div>
     {% endif %}

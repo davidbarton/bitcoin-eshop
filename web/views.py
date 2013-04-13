@@ -37,6 +37,7 @@ def index(request):
 	for product in Products.objects.all():
 		if request.method == 'POST' and request.POST['product'] == product.title:
 			form = ProductForm(request.POST)
+			form.set_product(product.title, product.stock)
 
 			# build second (address) form
 			if form.is_valid():
@@ -73,7 +74,7 @@ def index(request):
 			form = ProductForm()
 
 		# build simple form for each product and calc their prices
-		form.set_product(product.title)
+		form.set_product(product.title, product.stock)
 		price = get_exchange_value(exchange_rate, product.base_price)
 		price_list[product.id] = str(price)
 		products_out.append({
@@ -88,12 +89,12 @@ def index(request):
 	price_list["shipping_fee"] = str(shipping_fee)
 	request = fix_price_list(request, price_list)
 
-	msg_old_price = check_msg_old_price(request)
+	msg = check_msg(request)
 	
 	return render(request, 'web/index.html', {
 		'products': products_out,
 		'shipping_fee': shipping_fee,
-		'msg_old_price': msg_old_price
+		'msg': msg
 	})
 
 def order(request):
@@ -116,6 +117,15 @@ def order(request):
 	product = Products.objects.get(title=product_title)
 	form = ContactInformationForm(request.POST)
 	if form.is_valid():
+		# reduce product stock
+		print product.stock
+		print request.POST['count']
+		if product.stock >= int(request.POST['count']):
+			product.stock = product.stock - int(request.POST['count'])
+			product.save()
+		else:
+			return HttpResponseRedirect('/?msg=low-stock')
+
 		try:
 			# load fixed price
 			price_fixed = json.loads(signer.unsign(request.session.get('price_fixed', False), max_age = 60 * 15))
@@ -162,12 +172,12 @@ def order(request):
 				price = price_fixed[str(product.id)]
 			except KeyError:
 				return HttpResponseRedirect('/')
-			price_update = False
+			msg = get_msg("")
 		except (signing.BadSignature, KeyError):
 			print("Tampering detected! Price has been updated!")
 			exchange_rate = get_exchange_rate()
 			price = calculate_order_price(get_exchange_value(exchange_rate, product.base_price), count, get_exchange_value(exchange_rate, raw_shipping_fee))
-			price_update = True
+			msg = get_msg("price-update")
 
 			try:
 				del request.session['price_fixed']
@@ -181,7 +191,7 @@ def order(request):
 			'product_title': product_title,
 			'count': count,
 			'price': price,
-			'price_update': price_update,
+			'msg': msg,
 			'form': form
 		})
 
@@ -191,9 +201,12 @@ def update(request):
 	orders = Orders.objects.filter(transaction_status=0)
 
 	for order in orders:
-		if order.created <= (datetime.now() - timedelta(days = 2)):
+		if order.created <= (datetime.now() - timedelta(days=2)):
 			order.transaction_status = 2
 			order.save()
+			product = order.product
+			product.stock = product.stock + order.count
+			product.save()
 			send_canceled_order_email(order)
 			count_canceled += 1
 		else:
@@ -236,12 +249,20 @@ def get_exchange_value(exchange_rate, base_price):
 	value = exchange_rate.convert(Amount(base_price, currency)).value
 	return ceil(value * 100000) / 100000
 
-def check_msg_old_price(request):
+def check_msg(request):
 	try:
-		msg = request.GET['msg']
-		return True
+		return get_msg(request.GET['msg'])
 	except KeyError:
 		return False
+
+def get_msg(text):
+	if text == "old-price":
+		return "Varování, vaše cena byla příliš stará, proto byla vaše objednávka zrušena. Vytvořte prosím novou objednávku."
+	elif text == "price-update":
+		return "Varování, vaše cena byla aktualizována."
+	elif text == "low-stock":
+		return "Varování, během vašeho nákupu se zmenšila zásoba vámi žádaného zboží a nemáme ho dostatek pro vaši objednávku, proto byla vaše objednávka zrušena. Vytvořte prosím novou objednávku."
+	return False
 
 def calculate_order_price(product_price, count, shipping_fee):
 	price = Decimal(product_price) * Decimal(count) + Decimal(shipping_fee)

@@ -5,10 +5,10 @@
  
 {% block content %}
 
-	{% if price_update %}
+	{% if msg %}
 		<div class="row">
 	        <div class="span10 offset1 text-center">
-                <p class="alert lead"><em>Varování, vaše cena byla aktualizována.</em></p>
+                <p class="alert lead"><em>{{ msg }}</em></p>
 	        </div>
 	    </div>
     {% endif %}

@@ -7,12 +7,17 @@ class ProductForm(forms.Form):
 		initial = ''
 	)
 	count = forms.IntegerField(
-		max_value = 99,
+		max_value = 20,
 		min_value = 1,
 		initial = 1
 	)
-	def set_product(self, product):
+	def set_product(self, product, max_value = 20):
 		self.fields['product'].initial = product
+		self.fields['count'] = forms.IntegerField(
+			max_value = max_value,
+			min_value = 1,
+			initial = 1
+		)
 
 class ContactInformationForm(forms.Form):
 	product = forms.CharField(widget=forms.HiddenInput())
