@@ -18,7 +18,7 @@ Install
 Database migration [South]
 * see [The Basics](http://south.readthedocs.org/en/0.7.6/tutorial/part1.html) and [Converting An App](http://south.readthedocs.org/en/0.7.6/convertinganapp.html)
 
-Dev satabase data
+Dev database data
 * open and login at [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 * insert master public keys and products
 * dev product image: [http://www.freegreatpicture.com/files/104/20309-christmas-food.jpg](http://www.freegreatpicture.com/files/104/20309-christmas-food.jpg)
